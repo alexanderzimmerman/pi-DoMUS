@@ -82,6 +82,14 @@ piDoMUS<dim, spacedim, LAC>::solver_should_restart(const double t,
                 << max_kelly  << " >  " << kelly_threshold
                 << std::endl
                 << "######################################\n";
+          unsigned int n_active_cells=triangulation->n_active_cells();
+          unsigned int max_cells=this->max_cells;
+          if ((max_cells > 0) & (n_active_cells > max_cells))
+            {
+              pcout << "Maximum number of active cells has already been exceeded." << std::endl;
+              signals.end_solver_should_restart();
+              return false;
+            }
           pgr.mark_cells(estimated_error_per_cell, *triangulation);
 
           refine_and_transfer_solutions(solution,

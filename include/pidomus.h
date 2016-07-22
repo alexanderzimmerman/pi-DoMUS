@@ -442,6 +442,7 @@ private:
   std::vector<IndexSet> relevant_partitioning;
 
   bool adaptive_refinement;
+  unsigned int max_cells;
   const bool we_are_parallel;
   bool use_direct_solver;
 
