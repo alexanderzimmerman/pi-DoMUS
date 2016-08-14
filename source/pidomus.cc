@@ -246,6 +246,8 @@ void piDoMUS<dim, spacedim, LAC>::run ()
 
   eh.output_table(pcout);
 
+  signals.serialize_before_return(*dof_handler, solution, solution_dot);
+
 }
 
 
@@ -380,7 +382,7 @@ void piDoMUS<dim, spacedim, LAC>::setup_dofs (const bool &first_run)
             }
         }
 
-      signals.fix_initial_conditions(solution, solution_dot);
+      signals.fix_initial_conditions(*dof_handler, solution, solution_dot);
       locally_relevant_explicit_solution = solution;
 
     }
