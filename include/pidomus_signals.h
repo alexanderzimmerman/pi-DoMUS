@@ -86,6 +86,16 @@ struct Signals
    */
   boost::signals2::signal<void (typename LAC::VectorType &diff_comp)> fix_differential_components;
 
+  /**
+   * This signal allows one to use solution data before returning from pi-DoMUS,
+   * e.g. for serializing the solution so that it can later be used for restarting.
+   */
+  boost::signals2::signal <void (
+             DoFHandler<dim,spacedim> &dof_handler,
+             typename LAC::VectorType &y,
+             typename LAC::VectorType &y_dot
+      )> use_solution_before_return;
+
   // the following signals are called at begin and end of the
   // corresponding function in pi-DoMUS. They should be used for debug
   // purposes

@@ -245,7 +245,7 @@ void piDoMUS<dim, spacedim, LAC>::run ()
     }
 
   eh.output_table(pcout);
-
+  signals.use_solution_before_return(*dof_handler, solution, solution_dot);
 }
 
 
