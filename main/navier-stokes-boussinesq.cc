@@ -90,7 +90,7 @@ int main (int argc, char *argv[])
   // deallog.depth_console (0);
   try
     {
-		print_status(   "Dynamic Navier-Stokes-Boussinesq equations",
+		print_status( "Dynamic Navier-Stokes-Boussinesq equations",
                       dim,
                       // spacedim,
                       n_threads,
@@ -98,43 +98,61 @@ int main (int argc, char *argv[])
                       check_prm);
 					 
 		// First run reaction-diffusion-convection
+		ScalarReactionDiffusionConvection<2,2,LADealII> rdc_energy;
 		
-					  
+		piDoMUS<2,2,LADealII> rdc_pidomus("PiDomus", rdc_energy);
+		
+		ParameterAcceptor::initialize("rdc.prm", "rdc_used.prm");
+		
+		ParameterAcceptor::prm.log_parameters(deallog);
+
+		
+		rdc_pidomus.run ();
+		
+		
+		ParameterAcceptor::clear();
+		
+		out << std::endl;
+		
 		// Then run Navier-Stokes			  
 					  
 		NavierStokes<2,2,LATrilinos> ns_energy(dynamic); 
 		
-		piDoMUS<2,2,LATrilinos> ns_equation("piDoMUS", ns_energy);
+		piDoMUS<2,2,LATrilinos> ns_pidomus("piDoMUS", ns_energy);
 		
 		ParameterAcceptor::initialize("nsb.prm", "nsb_used.prm");
 		
-		ns_equation.run();
+		ParameterAcceptor::prm.log_parameters(deallog);
+		
+		
+		ns_pidomus.run();
 
+		
 		out << std::endl;
     }
-  catch (std::exception &exc)
-    {
-      std::cerr << std::endl << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
-      std::cerr << "Exception on processing: " << std::endl
-                << exc.what() << std::endl
-                << "Aborting!" << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
+	catch (std::exception &exc)
+		{
+		std::cerr << std::endl << std::endl
+                  << "----------------------------------------------------"
+                  << std::endl;
+		std::cerr << "Exception on processing: " << std::endl
+                  << exc.what() << std::endl
+                  << "Aborting!" << std::endl
+                  << "----------------------------------------------------"
+                  << std::endl;
 
-      return 1;
+		return 1;
     }
-  catch (...)
+	catch (...)
     {
-      std::cerr << std::endl << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
-      std::cerr << "Unknown exception!" << std::endl
-                << "Aborting!" << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
-      return 1;
+		std::cerr << std::endl << std::endl
+				  << "----------------------------------------------------"
+				  << std::endl;
+		std::cerr << "Unknown exception!" << std::endl
+                  << "Aborting!" << std::endl
+                  << "----------------------------------------------------"
+                  << std::endl;
+		return 1;
     }
 
   return 0;
