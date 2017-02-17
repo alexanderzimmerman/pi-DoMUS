@@ -9,13 +9,13 @@ subsection Convection parameter
   set Variable names      = x,y,t
 end
 subsection Dirichlet boundary conditions
-  set IDs and component masks = 0=ALL
-  set IDs and expressions     = 
+  set IDs and component masks = 0=ALL % 1=ALL
+  set IDs and expressions     = 0=-0.5 % 1=0.5
   set Known component names   = u
   set Used constants          = 
 end
 subsection Domain
-  set Colorize                      = false
+  set Colorize                      = true
   set Copy boundary to manifold ids = false
   set Copy material to manifold ids = false
   set Create default manifolds      = true
@@ -34,7 +34,7 @@ subsection Domain
   set Output grid file name         = 
 end
 subsection Error Tables
-  set Compute error            = true
+  set Compute error            = false
   set Error file format        = tex
   set Error precision          = 3
   set Output error tables      = true
@@ -115,8 +115,8 @@ subsection KINSOL for IMEX
   set Use internal KINSOL direct solver                  = false
 end
 subsection Neumann boundary conditions
-  set IDs and component masks = 
-  set IDs and expressions     = 
+  set IDs and component masks = 2=ALL % 3=ALL
+  set IDs and expressions     = 2=0. % 3=0.
   set Known component names   = u
   set Used constants          = 
 end
@@ -130,9 +130,9 @@ subsection Output Parameters
   set Subdivisions                   = 1
 end
 subsection PiDomus
-  set Adaptive refinement                            = true
+  set Adaptive refinement                            = false
   set Enable finer preconditioner                    = false
-  set Initial global refinement                      = 1
+  set Initial global refinement                      = 3
   set Jacobian solver tolerance                      = 1e-8
   set Max iterations                                 = 50
   set Max iterations finer prec.                     = 0

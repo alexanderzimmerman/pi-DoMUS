@@ -30,8 +30,8 @@ subsection AMG for Ap
   set w-cycle                            = false
 end
 subsection Dirichlet boundary conditions
-  set IDs and component masks = 0=ALL % 1=ALL % 2=ALL % 3=ALL
-  set IDs and expressions     = 0=0.;0.;0. % 1=0.;0.;0. % 2=0.;0.;0. % 3=1.;0.;0.
+  set IDs and component masks = 0=u;u.N % 1=u;u.N % 2=u;u.N % 3=u;u.N
+  set IDs and expressions     = 0=0.;0.;0. % 1=0.;0.;0. % 2=0.;0.;0. % 3=0.;0.;0.
   set Known component names   = u,u,p
   set Used constants          = 
 end
@@ -196,7 +196,7 @@ end
 subsection piDoMUS
   set Adaptive refinement                            = false
   set Enable finer preconditioner                    = false
-  set Initial global refinement                      = 4
+  set Initial global refinement                      = 3
   set Jacobian solver tolerance                      = 1e-8
   set Max iterations                                 = 0
   set Max iterations finer prec.                     = 0
