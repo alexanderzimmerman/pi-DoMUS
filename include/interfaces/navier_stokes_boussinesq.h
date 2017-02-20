@@ -264,7 +264,7 @@ private:
 
 template <int dim, int spacedim, typename LAC>
 NavierStokes<dim,spacedim, LAC>::
-NavierStokes(bool dynamic)
+NavierStokes(FEFieldFunction<dim> _temperature_field, bool dynamic)
   :
   PDESystemInterface<dim,spacedim,NavierStokes<dim,spacedim,LAC>, LAC>(
     "Navier Stokes Interface",
@@ -276,6 +276,7 @@ NavierStokes(bool dynamic)
   AMG_A("AMG for A"),
   AMG_Ap("AMG for Ap"),
   jac_Mp("Jacobi for Mp", 1.4),
+  temperature_field(_temperature_field),
   dynamic(dynamic),
   compute_Mp(false),
   compute_Ap(false),
