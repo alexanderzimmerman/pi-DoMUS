@@ -14,6 +14,14 @@
 #include <iostream>
 #include <string>
 
+/*
+I am trying to hack together a main program which couples the Navier-Stokes and Reaction-Diffusion-Convection problems. I want...
+
+- to add a temperature-based source term to the Navier-Stokes problem which uses the RDC concentration as the temperature field.
+- RDC to use the Navier-Stokes velocity solution as the convection velocity field.
+
+*/
+
 ////////////////////////////////////////////////////////////////////////////////
 // Begin macros
 
@@ -90,52 +98,52 @@ int main (int argc, char *argv[])
   // deallog.depth_console (0);
   try
     {
-		print_status( "Dynamic Navier-Stokes-Boussinesq equations",
-                      dim,
-                      // spacedim,
-                      n_threads,
-                      comm,
-                      check_prm);
-					 
-		// First run reaction-diffusion-convection
-		ScalarReactionDiffusionConvection<2,2,LADealII> rdc_energy;
-		
-		piDoMUS<2,2,LADealII> rdc_pidomus("PiDomus", rdc_energy);
-		
-		ParameterAcceptor::initialize("rdc.prm", "rdc_used.prm");
-		
-		ParameterAcceptor::prm.log_parameters(deallog);
+        print_status("Dynamic Navier-Stokes-Boussinesq equations",
+            dim,
+            // spacedim,
+            n_threads,
+            comm,
+            check_prm);
+                     
+        // First run reaction-diffusion-convection
+        ScalarReactionDiffusionConvection<2,2,LADealII> rdc_energy;
 
-		
-		rdc_pidomus.run ();
-		
+        piDoMUS<2,2,LADealII> rdc_pidomus("PiDomus", rdc_energy);
+
+        ParameterAcceptor::initialize("rdc.prm", "rdc_used.prm");
+
+        ParameterAcceptor::prm.log_parameters(deallog);
+
+
+        rdc_pidomus.run ();
+
         out << std::endl;
-        
-        
-		// Make temperature field for Navier-Stokes-Boussinesq
+
+
+        // Make temperature field for Navier-Stokes-Boussinesq
         const auto &rdc_dof_handler = rdc_pidomus.get_dof_handler();
         const auto &rdc_solution = rdc_pidomus.get_solution();
-        
-		const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> temperature_field(rdc_dof_handler,
-            rdc_solution);
-        
-		
-		// Then run Navier-Stokes			  
-        ParameterAcceptor::clear();
-        
-		NavierStokes<2,2,LATrilinos> ns_energy(temperature_field, dynamic); 
-		
-		piDoMUS<2,2,LATrilinos> ns_pidomus("piDoMUS", ns_energy);
-		
-		ParameterAcceptor::initialize("nsb.prm", "nsb_used.prm");
-		
-		ParameterAcceptor::prm.log_parameters(deallog);
-		
-		
-		ns_pidomus.run();
 
-		
-		out << std::endl;
+        const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> temperature_field(rdc_dof_handler,
+            rdc_solution);
+
+
+        // Then run Navier-Stokes			  
+        ParameterAcceptor::clear();
+
+        NavierStokes<2,2,LATrilinos> ns_energy(temperature_field, dynamic); 
+
+        piDoMUS<2,2,LATrilinos> ns_pidomus("piDoMUS", ns_energy);
+
+        ParameterAcceptor::initialize("nsb.prm", "nsb_used.prm");
+
+        ParameterAcceptor::prm.log_parameters(deallog);
+
+
+        ns_pidomus.run();
+
+
+        out << std::endl;
     }
 	catch (std::exception &exc)
 		{
