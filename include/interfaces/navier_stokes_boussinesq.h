@@ -542,6 +542,10 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
   auto &ps = fe_cache.get_values("solution", "p", pressure, et);
   auto &grad_ps = fe_cache.get_gradients("solution", "grad_p", pressure,et);
 
+  // Temporary variables for bouyancy term
+  const double g = -10., beta = 1., T0 = 0.;
+  double T = 0.;
+  
   // Previous time step solution:
   auto &u_olds = fe_cache.get_values("explicit_solution", "ue", velocity, dummy);
   auto &grad_u_olds = fe_cache.get_gradients("explicit_solution", "grad_ue", velocity, dummy);
@@ -642,6 +646,10 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
           // Pressure term:
           res -= p * div_v;
 
+		  // Bouyancy term:
+          this->temperature_field.value(pressure_points[quad], T);
+          res += g*(1. - beta*(T - T0))*u[1]; // scalar product, vertical gravity
+		  
           // Incompressible constraint:
           // if serial I use a direct solver over the
           // whole (A B', B 0) and i need to assemble B
