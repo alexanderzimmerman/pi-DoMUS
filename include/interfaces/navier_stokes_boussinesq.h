@@ -531,13 +531,6 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
   // dummy number to define the type of variables
   this->reinit (et, cell, fe_cache);
 
-  /*
-	We'll need some quadrature points for evaluating the FEFieldFunction.
-	The same quadrature points should be used for the pressure elements here and for the
-	temperature elements in the reaction-diffusion-convection simulator.
-  */
-  auto &q_points = scratch.get_quadrature_points();  
-  
   // Velocity:
   auto &us = fe_cache.get_values("solution", "u", velocity, et);
   auto &div_us = fe_cache.get_divergences("solution", "div_u", velocity,et);
@@ -548,10 +541,6 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
   // Velocity:
   auto &ps = fe_cache.get_values("solution", "p", pressure, et);
   auto &grad_ps = fe_cache.get_gradients("solution", "grad_p", pressure,et);
-
-  // Temporary variables for bouyancy term
-  const double g = -10., beta = 1., T0 = 0.;
-  double T = 0.;
   
   // Previous time step solution:
   auto &u_olds = fe_cache.get_values("explicit_solution", "ue", velocity, dummy);
@@ -567,6 +556,23 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
   auto &JxW = fe_cache.get_JxW_values();
 
   auto &fev = fe_cache.get_current_fe_values();
+  
+  // Temporary variables for bouyancy term
+  const double g = -10., beta = 1., T0 = 0.;
+  std::vector<double> T(n_quad_points);
+  
+  /*
+	We'll need some quadrature points for evaluating the FEFieldFunction.
+	The same quadrature points should be used for the pressure elements here and for the
+	temperature elements in the reaction-diffusion-convection simulator.
+  */
+  auto &q_points = fe_cache.get_quadrature_points();
+  
+  for (unsigned int quad=0; quad<n_quad_points; ++quad)
+  {
+    T[quad] = this->temperature_field.value(q_points[quad]);    
+  }
+  
 
   for (unsigned int quad=0; quad<n_quad_points; ++quad)
     {
@@ -654,8 +660,7 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
           res -= p * div_v;
 
 		  // Bouyancy term:
-          this->temperature_field.value(pressure_points[quad], T);
-          res += g*(1. - beta*(T - T0))*u[1]; // scalar product, vertical gravity
+          res += g*(1. - beta*(T[quad] - T0))*u[1]; // scalar product, vertical gravity
 		  
           // Incompressible constraint:
           // if serial I use a direct solver over the
