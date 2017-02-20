@@ -535,13 +535,13 @@ private:
    */
   Signals<dim,spacedim,LAC>    signals;
 
-public:
-
   /**
    * SimulatorAccess accesses to all internal variables and returns a
    * const reference to them through functions named get_variable()
    */
   friend class SimulatorAccess<dim,spacedim,LAC>;
+  
+public:
 
   friend class Lambdas<dim,spacedim,LAC>;
 
