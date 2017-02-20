@@ -148,6 +148,11 @@ public:
    * Get back the solution.
    */
   typename LAC::VectorType &get_solution();
+  
+  /**
+   * Get back the DoFHandler.
+   */
+  DoFHandler<dim,spacedim> &get_dof_handler();
 
   /**
    * save the diagonal of the lumped mass matrix in @p diag, which is
@@ -530,13 +535,13 @@ private:
    */
   Signals<dim,spacedim,LAC>    signals;
 
+public:
+
   /**
    * SimulatorAccess accesses to all internal variables and returns a
    * const reference to them through functions named get_variable()
    */
   friend class SimulatorAccess<dim,spacedim,LAC>;
-
-public:
 
   friend class Lambdas<dim,spacedim,LAC>;
 

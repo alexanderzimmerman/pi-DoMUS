@@ -1,4 +1,4 @@
-#include "interfaces/navier_stokes.h"
+#include "interfaces/navier_stokes_boussinesq.h"
 #include "interfaces/scalar_reaction_diffusion_convection.h"
 #include "pidomus.h"
 
@@ -109,14 +109,21 @@ int main (int argc, char *argv[])
 		
 		rdc_pidomus.run ();
 		
-		
-		ParameterAcceptor::clear();
-		
-		out << std::endl;
+        out << std::endl;
+        
+        
+		// Make temperature field for Navier-Stokes-Boussinesq
+        const auto &rdc_dof_handler = rdc_pidomus.get_dof_handler();
+        const auto &rdc_solution = rdc_pidomus.get_solution();
+        
+		const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> temperature_field(rdc_dof_handler,
+            rdc_solution);
+        
 		
 		// Then run Navier-Stokes			  
-					  
-		NavierStokes<2,2,LATrilinos> ns_energy(dynamic); 
+        ParameterAcceptor::clear();
+        
+		NavierStokes<2,2,LATrilinos> ns_energy(temperature_field, dynamic); 
 		
 		piDoMUS<2,2,LATrilinos> ns_pidomus("piDoMUS", ns_energy);
 		

@@ -102,7 +102,7 @@ class NavierStokes
 
 public:
   ~NavierStokes () {};
-  NavierStokes (FEFieldFunction<dim> temperature_field, bool dynamic);
+  NavierStokes (const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> _temperature_field, bool dynamic);
 
   void declare_parameters (ParameterHandler &prm);
   void parse_parameters_call_back ();
@@ -167,7 +167,7 @@ private:
   /**
    * Temperature field function for bouyancy term
    */
-  FEFieldFunction<dim> temperature_field;
+  const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> temperature_field;
    
   /**
    * Enable dynamic term: \f$ \partial_t u\f$.
@@ -264,7 +264,7 @@ private:
 
 template <int dim, int spacedim, typename LAC>
 NavierStokes<dim,spacedim, LAC>::
-NavierStokes(FEFieldFunction<dim> _temperature_field, bool dynamic)
+NavierStokes(const Functions::FEFieldFunction<2,DoFHandler<2>,BlockVector<double>> _temperature_field, bool dynamic)
   :
   PDESystemInterface<dim,spacedim,NavierStokes<dim,spacedim,LAC>, LAC>(
     "Navier Stokes Interface",
@@ -531,6 +531,13 @@ energies_and_residuals(const typename DoFHandler<dim,spacedim>::active_cell_iter
   // dummy number to define the type of variables
   this->reinit (et, cell, fe_cache);
 
+  /*
+	We'll need some quadrature points for evaluating the FEFieldFunction.
+	The same quadrature points should be used for the pressure elements here and for the
+	temperature elements in the reaction-diffusion-convection simulator.
+  */
+  auto &q_points = scratch.get_quadrature_points();  
+  
   // Velocity:
   auto &us = fe_cache.get_values("solution", "u", velocity, et);
   auto &div_us = fe_cache.get_divergences("solution", "div_u", velocity,et);
