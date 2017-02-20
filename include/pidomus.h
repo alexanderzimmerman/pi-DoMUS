@@ -23,7 +23,7 @@
 #include <deal.II/lac/trilinos_block_sparse_matrix.h>
 #include <deal.II/lac/linear_operator.h>
 
-
+#include <deal.II/numerics/fe_field_function.h>
 
 #include <mpi.h>
 
@@ -84,7 +84,11 @@ public:
 
   void run ();
 
-
+  /**
+   * Make a FEFieldFunction for sampling the solution outside of the solver
+   */
+  Functions::FEFieldFunction<2,DoFHandler<2>,typename LAC::VectorType> make_fe_field_function();
+  
   /*********************************************************
    * Public interface from SundialsInterface
    *********************************************************/
@@ -173,7 +177,6 @@ public:
    *
    */
   const std::vector<typename LAC::VectorType> &get_eigenvectors();
-
 
 
 private:

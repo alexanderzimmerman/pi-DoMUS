@@ -196,6 +196,13 @@ piDoMUS<dim, spacedim, LAC>::piDoMUS (const std::string &name,
 }
 #endif
 
+template<>
+Functions::FEFieldFunction<2,DoFHandler<2>,typename LATrilinos::VectorType> 
+piDoMUS<2, 2, LATrilinos>::make_fe_field_function()
+{
+    Functions::FEFieldFunction<2,DoFHandler<2>,typename LATrilinos::VectorType> fe_field_function(*dof_handler, solution);
+    return fe_field_function;
+}
 
 template <int dim, int spacedim, typename LAC>
 void piDoMUS<dim, spacedim, LAC>::run ()
